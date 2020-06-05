@@ -1,7 +1,7 @@
 # Constrained-Data-Base-with-Slow-Streams
 Discussions (help-wanted) on usability of "Constrained Data Base with Slow Streams" that is described here
 
-
+For better lisibility please see https://github.com/bacloud14/Constrained-Data-Base-with-Slow-Streams/blob/master/Constrained%20real%20time%20database.pdf
 
 **Constrained Data Base with Slow Streams**
 
