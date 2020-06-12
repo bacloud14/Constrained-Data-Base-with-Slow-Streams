@@ -1,10 +1,3 @@
-# Constrained-Data-Base-with-Slow-Streams
-Discussions (help-wanted) on usability of "Constrained Data Base with Slow Streams" that is described here
-
-For better lisibility please see https://github.com/bacloud14/Constrained-Data-Base-with-Slow-Streams/blob/master/Constrained%20real%20time%20database.pdf
-
-Note: This is not part of any academic program, and solely the word of the owner of this repository. It is not intended to be published in any journal therfore, I am asking for a review always under the open source label. 
-
 **Constrained Data Base with Slow Streams**
 
 **Stream Reasoning** can be described as Reasoning Upon Rapidly Changing Information[1[https://streamreasoning.org/](https://streamreasoning.org/)][E. Della Valle, &amp; F. Heintz, 2018]
@@ -57,65 +50,79 @@ OCL: [https://en.wikipedia.org/wiki/Object\_Constraint\_Language](https://en.wik
 
 - **Why Slow Streams**
 
-Talking about Streams in academia, we find generally all subjects address performance problems, solutions to rapid (changing or not) of input data to a system. We find reactive programming for example based on asynchronous calls and decoupling of functionalities of a system, all benefiting parallel computing. We are not addressing this issue, slow streams here emphasize that is not the subject. Rather we focus on maintaining a system robust on rapid changes of business specifications.
+Talking about Streams in academia, we find generally all subjects address performance problems, solutions to rapid (changing or not) of input data to a system. We find reactive programming for example based on asynchronous calls and decoupling of functionalities of a system, all benefiting parallel computing. We are not addressing this issue, slow streams here emphasize that is not the subject. Rather we focus on maintaining a system robust on rapid changes of business specifications
 
-Normally data does not change at the same rate of its arrival speed, otherwise It would be complete random and non-useful data; Except when we are talking about unstructured data that is meant to be so to some extent. To have a consistence database with changing sourcing data with some knowledge of upcoming new consistency rules or changes. Using **LTL, Constraint Logic Programming** , and an **event-condition-action** language, we can express near future &quot;known changes&quot; by consistency rules. With the described pattern and definitions, we hopefully could have a consistent database by pushing and changing rules in a defined **LTL-CONSTRAINT-EVENT-ACTION** layer in contrast with traditional ETL/Databases solutions.
+Normally data does not change at the same rate of its arrival speed, otherwise It would be complete random and non-useful data; Except when we are talking about unstructured data that is meant to be so to some extent.
 
-**Examples**
+When we have changing sourcing data and some prior knowledge of how these changes occur (upon business specification changes), we can still have a consistence database Using **LTL, Constraint Logic Programming** , and an **event-condition-action** language, we can express near future &quot;known changes&quot;.
 
-A run can be described as a set of rules and actions.
+With the described pattern and definitions, we hopefully can have a consistent database by pushing and changing rules in a defined **LTL-CONSTRAINT-EVENT-ACTION** layer in contrast with traditional ETL/Databases solutions.
+
+- **Abstract Specification**
+
+A run (a version) can be described as a set of rules and actions.
 
 Actions can be BACK-UP, IGNORE, HISTORISE, …
 
-Rules can target columns in different tables.
+Conditions can target columns in different tables.
 
-Current Runs rules can be mixed.
+**Action set**
+
+{
 
 run1 : @condWHEN tableA.ID == tableB.ID AND tableA.column1 \&gt; tableB.column2
 
 BACK-UP
 
-FLAG tableA.rule1
+Except LOG (&#39;Rule 1 error&#39;)
 
-AFTER run1 : LOG (&#39;WARN&#39;)
+Finally LOG (&#39;Rule 1 chosen&#39;)
 
 run2 : @condWHEN tableA.column1 \&gt; 0
 
 DO NOT BACK-UP
 
-FLAG tableA.rule2
+Except LOG (&#39;Rule 2 error&#39;)
 
-AFTER run2 : LOG (&#39;ERROR&#39;)
+Finally LOG (&#39;Rule 2 chosen&#39;)
 
 run3 : @condWHEN exists(tableC.column1)
 
 BACK-UP tableC.column1
 
-FLAG tableA.rule3
+Except LOG (&#39;Rule 3 error&#39;)
 
-AFTER run3 : LOG (&#39;ERROR&#39;)
+Finally LOG (&#39;Seeing a new business change on sourcing data&#39;)
 
-ALWAYSE (run2 , run1) UNTIL run3@cond
+}
+
+**Rule set**
+
+{
+
+ALWAYSE (run2 AND run1) UNTIL run3@cond
+
+}
 
 Can omit @cond and expect &quot;run&quot; as a condition when it is an operand in a LTL expression.
 
 **LTL-C (LTL-Constraint) variant**
 
-As described above, LTL is meant to express a _fact_, however the expression highlighted in green, is different, because it is bound to the _event-action_ concept, it is meant to impose itself as true in the system, by applying predicate tests and actions, The system _obeys_ the LTL formulae choosing from possible actions so as to satisfy the abstract LTL formulae _as soon as possible_. In other words, the system is always searching for _a sub-domain_ that satisfies the _LTL formulae_. It is a form of constraint optimization paradigm expressed over LTL.
+As described above, LTL is meant to express a _fact_, however the expression highlighted in green, is different, because it is bound to an _event-action_ statement, it is meant to impose itself on the system (if always run successfully, then it evaluates to true) otherwise the system raises an exception. The system _obeys_ the LTL formulae choosing from possible actions so as to satisfy the abstract LTL formulae _as soon as possible_. In other words, the system is always searching for _a sub-domain_ from the action set that satisfies all _LTL formulas in the rule set_. It is a form of constraint optimization paradigm expressed over LTL.
 
-Analogy to Predicate logic:
+_Analogy to Predicate logic:_
 
 First-order logic uses quantified variables over non-logical objects like _5+5 == 10_
 
-**LTL-C** is a higher order logic where constraints expressed in a constraint language are the propositional variables.
+**LTL-C** is a higher order logic where constraints expressed in a constraint language are the propositional variables for LTL formulas.
 
 **Example**
 
 ALWAYSE (run2 , run1) UNTIL run3@condrun3
 
-In this example: run1, run2, and run3 are all self-conditioned runs, they are execution only when there conditions are met. For instance: run1 could be run only if run1@cond is satisfied.
+In this example: run1, run2, and run3 are all self-conditioned runs, they execute only when there conditions are met, if there condition is not met, they don&#39;t necessarily fail. For instance: run1 can be run only if run1@cond is satisfied.
 
-The query means the system always run the conditioned runs run2 and run1 while checking also every time whether run3@condis satisfied, if it is the case, then run3 is executed instead of run1 and run2.
+The query means the system always runs the conditioned actions run2 and run1 while checking also every time whether run3@condis satisfied, As soon as run3@cond it is satisfied, then run3 is executed instead of run1ANDrun2.
 
 **Discussion**
 
@@ -129,4 +136,4 @@ The second limit, is that constraints are expressed only over arriving data and 
 
 **LTL-C Memory engine (not yet specified)**
 
-The proposed LTL-EVENT-ACTION solution will need memory. It caches run &quot;runs&quot; to be able to handle future events. (Like &quot;until&quot;, &quot;sometimes&quot;, &quot;eventually&quot; ..).
+The proposed LTL-EVENT-ACTION solution needs a memory. It caches actions &quot;runs&quot; to be able to handle future events. (Like &quot;until&quot;, &quot;sometimes&quot;, &quot;eventually&quot; ..).
