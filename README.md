@@ -3,6 +3,8 @@ Discussions (help-wanted) on usability of "Constrained Data Base with Slow Strea
 
 For better lisibility please see https://github.com/bacloud14/Constrained-Data-Base-with-Slow-Streams/blob/master/Constrained%20real%20time%20database.pdf
 
+Note: This is not part of any academic program, and solely the word of the owner of this repository. It is not intended to be published in any journal therfore, I am asking for a review always under the open source label. 
+
 **Constrained Data Base with Slow Streams**
 
 **Stream Reasoning** can be described as Reasoning Upon Rapidly Changing Information[1[https://streamreasoning.org/](https://streamreasoning.org/)][E. Della Valle, &amp; F. Heintz, 2018]
