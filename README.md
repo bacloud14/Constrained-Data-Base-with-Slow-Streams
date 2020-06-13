@@ -91,29 +91,33 @@ Conditions can target columns in different tables.
 {
 
 ```
-run1 : @condWHEN tableA.ID == tableB.ID AND tableA.column1 \&gt; tableB.column2
+run1 : @cond WHEN tableA.ID == tableB.ID AND tableA.column1 > tableB.column2 
 
-BACK-UP
+        BACK-UP  
 
-Except LOG (&#39;Rule 1 error&#39;)
+Except LOG ('Rule 1 error') 
 
-Finally LOG (&#39;Rule 1 chosen&#39;)
+Finally LOG ('Rule 1 chosen') 
 
-run2 : @condWHEN tableA.column1 \&gt; 0
+ 
 
-DO NOT BACK-UP
+run2 : @cond WHEN tableA.column1 > 0 
 
-Except LOG (&#39;Rule 2 error&#39;)
+        DO NOT BACK-UP 
 
-Finally LOG (&#39;Rule 2 chosen&#39;)
+Except LOG ('Rule 2 error') 
 
-run3 : @condWHEN exists(tableC.column1)
+Finally LOG ('Rule 2 chosen') 
 
-BACK-UP tableC.column1
+ 
 
-Except LOG (&#39;Rule 3 error&#39;)
+run3 : @cond WHEN exists(tableC.column1) 
 
-Finally LOG (&#39;Seeing a new business change on sourcing data&#39;)
+        BACK-UP tableC.column1 
+
+Except LOG ('Rule 3 error') 
+
+Finally LOG ('Seeing a new business change on sourcing data') 
 ```
 
 }
